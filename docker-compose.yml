@@ -1,0 +1,210 @@
+version: '3'
+networks:
+  app_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.19.0.0/16
+          gateway: 172.19.0.1
+services:
+  mysql:
+    restart: always
+    image: mysql:5.7.36
+    container_name: mysql
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/conf:/etc/mysql
+    environment:
+      - "MYSQL_ROOT_PASSWORD=root"
+      - "TZ=Asia/Shanghai"
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - 3306:3306
+    networks:
+      app_net:
+        ipv4_address: 172.19.10.1
+#  mysql2:
+#    restart: always
+#    image: mysql:5.7.29
+#    container_name: mysql2
+#    volumes:
+#      - ./mysql/data2:/var/lib/mysql
+#      - ./mysql/conf2/my.cnf:/etc/mysql/my.cnf
+#    environment:
+#      - "MYSQL_ROOT_PASSWORD=root"
+#      - "TZ=Asia/Shanghai"
+#    ports:
+#      - 3307:3306
+#    networks:
+#      app_net:
+#        ipv4_address: 172.19.10.12
+  redis:
+    image: redis:6.2.6
+    container_name: redis
+    restart: always
+    command: redis-server /etc/redis/redis.conf
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis/data:/data
+      - ./redis/logs:/logs
+      - ./redis/conf/redis.conf:/etc/redis/redis.conf
+    networks:
+      app_net:
+        ipv4_address: 172.19.10.2
+  nginx:
+    image: nginx:1.21.3
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/log:/var/log/nginx
+      - D:/var/www/http:/var/www/http
+      - D:/var/www/phpcode/laravel:/var/www/phpcode/laravel
+    networks:
+      app_net:
+        ipv4_address: 172.19.10.3
+  php71:
+    build: ./php/php71
+    image: docker-container_php71
+    container_name: php71
+    restart: always
+    ports:
+      - "9000:9000"
+    volumes:
+      - D:/var/www/http:/var/www/http
+      - ./php/php71/logs:/var/logs/php71/logs
+    working_dir: /var/www/http
+    networks:
+      app_net:
+        ipv4_address: 172.19.10.4
+  php73:
+    build: ./php/php73
+    image: docker-container_php73
+    container_name: php73
+    restart: always
+    ports:
+      - "9001:9000"
+    volumes:
+      - D:/var/www/http:/var/www/http
+      - D:/var/www/phpcode/laravel:/var/www/phpcode/laravel
+      - ./php/php73/logs:/var/logs/php73/logs
+    working_dir: /var/www/http
+    networks:
+      app_net:
+        ipv4_address: 172.19.10.5
+#  yearning:
+#    build: ./yearning
+#    container_name: yearning
+#    restart: unless-stopped
+#    ports:
+#      - "8000:8000"
+#    environment:
+#      - "MYSQL_ADDR=172.19.10.1:3306"
+#      - "MYSQL_USER=root"
+#      - "MYSQL_PASSWORD=root"
+#      - "MYSQL_DB=mysql"
+#    networks:
+#      app_net:
+#        ipv4_address: 172.19.10.6
+#  php74:
+#    build: ./php/php74
+#    image: docker-container_php74
+#    container_name: php74
+#    restart: unless-stopped
+#    ports:
+#      - "9002:9000"
+#    volumes:
+#      - D:/var/www/http:/var/www/http
+#    working_dir: /var/www/http
+#    networks:
+#      app_net:
+#        ipv4_address: 172.19.10.7
+#  clickhouse:
+#    image: clickhouse/clickhouse-server
+#    container_name: clickhouse
+#    restart: unless-stopped
+#    volumes:
+#      - ./clickhouse/data:/var/lib/clickhouse
+#      - ./clickhouse/logs:/var/log/clickhouse-server
+#      - ./clickhouse/conf/users.d:/etc/clickhouse-server/users.d
+#    ports:
+#      - "8123:8123"
+#    ulimits:
+#      nofile: 10240
+#    working_dir: /usr/local
+#    networks:
+#      app_net:
+#        ipv4_address: 172.19.10.8
+#  tomcat9:
+#    image: tomcat:9.0
+#    container_name: tomcat9
+#    restart: unless-stopped
+#    #volumes:
+#      #- D:/var/www/http:/var/www/http
+#    ports:
+#      - "8081:8080"
+#    #working_dir: /var/www/http/bingo
+#    networks:
+#      app_net:
+#        ipv4_address: 172.19.10.9
+#  wordpress:
+#    image: wordpress:latest
+#    container_name: wordpress
+#    ports:
+#      - "8001:80"
+#    restart: always
+#    environment:
+#      - WORDPRESS_DB_HOST=mysql
+#      - WORDPRESS_DB_USER=root
+#      - WORDPRESS_DB_PASSWORD=root
+#      - WORDPRESS_DB_NAME=wordpress
+#    networks:
+#      app_net:
+#        ipv4_address: 172.19.10.10
+#  hera:
+#    build: ./hera
+#    container_name: hera
+#    restart: unless-stopped
+#    volumes:
+#    - D:/var/www/http:/var/www/http
+#    ports:
+#      - "9528:9528"
+#      - "9529:9529"
+#    networks:
+#      app_net:
+#        ipv4_address: 172.19.10.11
+  # ubuntu:
+  #   image: ubuntu
+  #   container_name: ubuntu
+  #   environment:
+  #     - TERM=xterm
+  #   command: top -b
+  #   networks:
+  #     app_net:
+  #       ipv4_address: 172.19.10.13
+
+#  node:
+#    build: ./node
+#    image: node
+#    restart: unless-stopped
+#    container_name: node
+#    volumes:
+#      - D:/var/www/phpcode/laravel:/var/www/phpcode/laravel
+#    working_dir: /var/www/phpcode/laravel/weibo
+#    networks:
+#      app_net:
+#        ipv4_address: 172.19.10.14
+#  mailhog:
+#    image: mailhog/mailhog:latest
+#    container_name: mailhog
+#    restart: unless-stopped
+#    ports:
+#      - "8025:8025"
+#      - "1025:1025"
+#    networks:
+#      app_net:
+#        ipv4_address: 172.19.10.15
+

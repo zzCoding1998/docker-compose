@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+if [ ! -d /.composer ]; then
+    mkdir /.composer
+fi
+
+# ugo表示user,group,other
+chmod -R ugo+rw /.composer
+chmod -R ugo+rw /var/www/http/example01/storage
+
+php-fpm
