@@ -1,28 +1,18 @@
 version: '3'
-networks:
-  app_net:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.19.0.0/16
-          gateway: 172.19.0.1
 services:
-  mysql:
-    restart: always
-    image: mysql:5.7.36
-    container_name: mysql
-    volumes:
-      - ./mysql/data:/var/lib/mysql
-      - ./mysql/conf:/etc/mysql
-    environment:
-      - "MYSQL_ROOT_PASSWORD=root"
-      - "TZ=Asia/Shanghai"
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-    ports:
-      - 3306:3306
-    networks:
-      app_net:
-        ipv4_address: 172.19.10.1
+#  mysql:
+#    restart: always
+#    image: mysql:5.7.36
+#    container_name: mysql
+#    volumes:
+#      - ./mysql/data:/var/lib/mysql
+#      - ./mysql/conf:/etc/mysql
+#    environment:
+#      - "MYSQL_ROOT_PASSWORD=root"
+#      - "TZ=Asia/Shanghai"
+#    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+#    ports:
+#      - 3306:3306
 #  mysql2:
 #    restart: always
 #    image: mysql:5.7.29
@@ -49,52 +39,43 @@ services:
       - ./redis/data:/data
       - ./redis/logs:/logs
       - ./redis/conf/redis.conf:/etc/redis/redis.conf
-    networks:
-      app_net:
-        ipv4_address: 172.19.10.2
-  nginx:
-    image: nginx:1.21.3
-    container_name: nginx
-    restart: always
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./nginx/log:/var/log/nginx
-      - D:/var/www/http:/var/www/http
-      - D:/var/www/phpcode/laravel:/var/www/phpcode/laravel
-    networks:
-      app_net:
-        ipv4_address: 172.19.10.3
-  php71:
-    build: ./php/php71
-    image: docker-container_php71
-    container_name: php71
-    restart: always
-    ports:
-      - "9000:9000"
-    volumes:
-      - D:/var/www/http:/var/www/http
-      - ./php/php71/logs:/var/logs/php71/logs
-    working_dir: /var/www/http
-    networks:
-      app_net:
-        ipv4_address: 172.19.10.4
-  php73:
-    build: ./php/php73
-    image: docker-container_php73
-    container_name: php73
-    restart: always
-    ports:
-      - "9001:9000"
-    volumes:
-      - D:/var/www/http:/var/www/http
-      - D:/var/www/phpcode/laravel:/var/www/phpcode/laravel
-      - ./php/php73/logs:/var/logs/php73/logs
-    working_dir: /var/www/http
-    networks:
-      app_net:
-        ipv4_address: 172.19.10.5
+#  nginx:
+#    image: nginx:1.21.3
+#    container_name: nginx
+#    restart: always
+#    ports:
+#      - "80:80"
+#    volumes:
+#      - ./nginx/conf.d:/etc/nginx/conf.d
+#      - ./nginx/log:/var/log/nginx
+#      - D:/var/www/http:/var/www/http
+#      - D:/var/www/phpcode/laravel:/var/www/phpcode/laravel
+#  php71:
+#    build: ./php/php71
+#    image: docker-container_php71
+#    container_name: php71
+#    restart: always
+#    ports:
+#      - "9000:9000"
+#    volumes:
+#      - D:/var/www/http:/var/www/http
+#      - ./php/php71/logs:/var/logs/php71/logs
+#    working_dir: /var/www/http
+#    networks:
+#      app_net:
+#        ipv4_address: 172.19.10.4
+#  php73:
+#    build: ./php/php73
+#    image: docker-container_php73
+#    container_name: php73
+#    restart: always
+#    ports:
+#      - "9001:9000"
+#    volumes:
+#      - D:/var/www/http:/var/www/http
+#      - D:/var/www/phpcode/laravel:/var/www/phpcode/laravel
+#      - ./php/php73/logs:/var/logs/php73/logs
+#    working_dir: /var/www/http
 #  yearning:
 #    build: ./yearning
 #    container_name: yearning
@@ -207,4 +188,25 @@ services:
 #    networks:
 #      app_net:
 #        ipv4_address: 172.19.10.15
+  python3:
+    build: ./python/3.10.1
+    container_name: python3
+    volumes:
+      - D:/var/www/python_project:/app
+    ports:
+      - 8010:8010
+      - 5000:5000
+    restart: unless-stopped
+    command: top -b
+  phpredisadmin:
+    image: erikdubbelboer/phpredisadmin
+    environment:
+      - REDIS_1_HOST=host.docker.internal
+      - REDIS_1_NAME=docker_redis
+      - REDIS_1_PORT=6379
+      - REDIS_1_AUTH=123456
+      - REDIS_1_DATABASES=0
+    ports:
+      - 8011:80
+    restart: unless-stopped
 
