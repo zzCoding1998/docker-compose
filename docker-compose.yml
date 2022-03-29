@@ -1,18 +1,18 @@
 version: '3'
 services:
-#  mysql:
-#    restart: always
-#    image: mysql:5.7.36
-#    container_name: mysql
-#    volumes:
-#      - ./mysql/data:/var/lib/mysql
-#      - ./mysql/conf:/etc/mysql
-#    environment:
-#      - "MYSQL_ROOT_PASSWORD=root"
-#      - "TZ=Asia/Shanghai"
-#    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-#    ports:
-#      - 3306:3306
+  mysql:
+    restart: always
+    image: mysql:5.7.36
+    container_name: mysql
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/conf:/etc/mysql
+    environment:
+      - "MYSQL_ROOT_PASSWORD=root"
+      - "TZ=Asia/Shanghai"
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - 3306:3306
 #  mysql2:
 #    restart: always
 #    image: mysql:5.7.29
@@ -193,13 +193,17 @@ services:
     container_name: python3
     volumes:
       - D:/var/www/python_project:/app
+      - D:/var/docker/docker-container/python/3.10.1/sh:/var/sh
+      - E:/spiders_resources:/var/data/spiders_resources
     ports:
       - 8010:8010
+      - 8012:8012
       - 5000:5000
-    restart: unless-stopped
-    command: top -b
+#    restart: unless-stopped
+    command: /var/sh/start-container.sh
   phpredisadmin:
     image: erikdubbelboer/phpredisadmin
+    container_name: phpredisadmin
     environment:
       - REDIS_1_HOST=host.docker.internal
       - REDIS_1_NAME=docker_redis
