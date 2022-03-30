@@ -205,7 +205,7 @@ services:
     image: erikdubbelboer/phpredisadmin
     container_name: phpredisadmin
     environment:
-      - REDIS_1_HOST=host.docker.internal
+      - REDIS_1_HOST=redis
       - REDIS_1_NAME=docker_redis
       - REDIS_1_PORT=6379
       - REDIS_1_AUTH=123456
